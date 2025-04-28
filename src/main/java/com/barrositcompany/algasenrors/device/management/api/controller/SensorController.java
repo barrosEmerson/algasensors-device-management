@@ -1,28 +1,29 @@
 package com.barrositcompany.algasenrors.device.management.api.controller;
 
-import com.barrositcompany.algasenrors.device.management.api.model.SensorOutputDTO;
-import com.barrositcompany.algasenrors.device.management.domain.model.SensorId;
+import com.barrositcompany.algasenrors.device.management.api.client.SensorMonitoringClient;
 import com.barrositcompany.algasenrors.device.management.api.model.SensorInputDTO;
+import com.barrositcompany.algasenrors.device.management.api.model.SensorOutputDTO;
 import com.barrositcompany.algasenrors.device.management.common.IdGenerator;
 import com.barrositcompany.algasenrors.device.management.domain.model.Sensor;
+import com.barrositcompany.algasenrors.device.management.domain.model.SensorId;
 import com.barrositcompany.algasenrors.device.management.domain.repository.SensorRepository;
 import io.hypersistence.tsid.TSID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/sensors")
+@RequiredArgsConstructor
 public class SensorController {
 
     private final SensorRepository sensorRepository;
+    private final SensorMonitoringClient sensorMonitoringClient;
 
-    public SensorController(SensorRepository sensorRepository) {
-        this.sensorRepository = sensorRepository;
-    }
+
 
     @GetMapping
     public Page<SensorOutputDTO> search(Pageable pageable) {
@@ -90,6 +91,7 @@ public class SensorController {
                     }
                 });
         sensorRepository.delete(sensor);
+        sensorMonitoringClient.disableSensorMonitoring(sensorId);
     }
 
     @PutMapping("/{sensorId}/enable")
@@ -103,6 +105,7 @@ public class SensorController {
                 });
         sensor.setEnabled(true);
         sensor = sensorRepository.saveAndFlush(sensor);
+        sensorMonitoringClient.enableSensorMonitoring(sensorId);
         return convertToModel(sensor);
     }
 
@@ -119,6 +122,7 @@ public class SensorController {
                 });
         sensor.setEnabled(false);
         sensorRepository.save(sensor);
+        sensorMonitoringClient.disableSensorMonitoring(sensorId);
     }
 
 

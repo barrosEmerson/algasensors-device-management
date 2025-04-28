@@ -3,6 +3,7 @@ package com.barrositcompany.algasenrors.device.management.domain.model;
 import io.hypersistence.tsid.TSID;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.util.Objects;
 
 @Getter
 @Embeddable
+@EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SensorId implements Serializable {
     private static final long serialVersionUID = 1L;
