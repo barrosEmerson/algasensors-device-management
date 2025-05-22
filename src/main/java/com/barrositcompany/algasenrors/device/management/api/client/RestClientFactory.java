@@ -15,7 +15,7 @@ public class RestClientFactory {
 
     private final RestClient.Builder builder;
 
-    public RestClient temperatureMoniotoringRestClient() {
+    public RestClient temperatureMonitoringRestClient() {
         return builder
                 .baseUrl("http://localhost:8083")
                 .requestFactory(requestFactory())

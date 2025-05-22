@@ -1,7 +1,9 @@
 package com.barrositcompany.algasenrors.device.management.api.controller;
 
 import com.barrositcompany.algasenrors.device.management.api.client.SensorMonitoringClient;
+import com.barrositcompany.algasenrors.device.management.api.model.SensorDetailOutputDTO;
 import com.barrositcompany.algasenrors.device.management.api.model.SensorInputDTO;
+import com.barrositcompany.algasenrors.device.management.api.model.SensorMonitoringOutputDTO;
 import com.barrositcompany.algasenrors.device.management.api.model.SensorOutputDTO;
 import com.barrositcompany.algasenrors.device.management.common.IdGenerator;
 import com.barrositcompany.algasenrors.device.management.domain.model.Sensor;
@@ -41,6 +43,27 @@ public class SensorController {
                     }
                 });
         return convertToModel(sensor);
+
+    }
+
+    @GetMapping("/{sensorId}/detail")
+    public SensorDetailOutputDTO getOneWithDetail(@PathVariable TSID sensorId) {
+        Sensor sensor = sensorRepository.findById(new SensorId(sensorId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sensor not found") {
+                    @Override
+                    public String getMessage() {
+                        return "Sensor with ID " + sensorId + " not found";
+                    }
+                });
+
+        SensorMonitoringOutputDTO detail = sensorMonitoringClient.getDetail(sensorId);
+        SensorOutputDTO sensorOutputDTO = convertToModel(sensor);
+
+
+        return SensorDetailOutputDTO.builder()
+                .monitoring(detail)
+                .sensor(sensorOutputDTO)
+                .build();
 
     }
 
